@@ -6,14 +6,22 @@ export const sphereVertexShader = /* glsl */ `
   varying vec3 vViewDir;
   varying float vRelevance;
   varying vec3 vColor;
+  varying float vDepth;
+
+  uniform float uTime;
 
   void main() {
     vColor = aColor;
     vRelevance = aRelevance;
 
-    vec4 mvPosition = modelViewMatrix * instanceMatrix * vec4(position, 1.0);
+    // Gentle breathing when idle (low relevance)
+    float breath = 1.0 + 0.08 * sin(uTime * 0.8 + float(gl_InstanceID) * 1.37) * (1.0 - aRelevance);
+    vec3 pos = position * breath;
+
+    vec4 mvPosition = modelViewMatrix * instanceMatrix * vec4(pos, 1.0);
     vNormal = normalize(normalMatrix * mat3(instanceMatrix) * normal);
     vViewDir = normalize(-mvPosition.xyz);
+    vDepth = -mvPosition.z;
 
     gl_Position = projectionMatrix * mvPosition;
   }
@@ -24,27 +32,38 @@ export const sphereFragmentShader = /* glsl */ `
   varying vec3 vViewDir;
   varying float vRelevance;
   varying vec3 vColor;
+  varying float vDepth;
+
+  uniform float uTime;
 
   void main() {
-    // Fresnel rim
-    float fresnel = pow(1.0 - max(dot(vNormal, vViewDir), 0.0), 3.0);
+    // Fresnel rim — sharper for relevant spheres
+    float fresnelPow = mix(3.0, 2.0, vRelevance);
+    float fresnel = pow(1.0 - max(dot(vNormal, vViewDir), 0.0), fresnelPow);
 
     // Core glow
     float core = pow(max(dot(vNormal, vViewDir), 0.0), 2.0);
 
-    // Base dim emission
-    float baseIntensity = 0.15 + 0.1 * core;
+    // Idle breathing brightness
+    float breathBright = 0.03 * sin(uTime * 1.2 + vColor.x * 10.0) * (1.0 - vRelevance);
 
-    // Relevance boost
-    float relevanceGlow = vRelevance * (1.5 + 1.0 * fresnel);
+    // Base dim emission with breath
+    float baseIntensity = 0.18 + 0.12 * core + breathBright;
+
+    // Relevance boost with warm shift
+    float relevanceGlow = vRelevance * (1.8 + 1.2 * fresnel);
 
     vec3 color = vColor * (baseIntensity + relevanceGlow);
 
-    // Add white-hot rim for high relevance
-    color += vec3(1.0, 0.95, 0.85) * fresnel * vRelevance * 0.8;
+    // White-gold rim for high relevance
+    vec3 rimColor = vec3(1.0, 0.92, 0.78);
+    color += rimColor * fresnel * vRelevance * 1.0;
+
+    // Subtle warm tint on rim even at idle
+    color += rimColor * fresnel * 0.05 * (1.0 - vRelevance);
 
     // Atmospheric edge
-    float alpha = 0.3 + 0.7 * (core + fresnel * 0.5) + vRelevance * 0.5;
+    float alpha = 0.35 + 0.65 * (core + fresnel * 0.5) + vRelevance * 0.5;
     alpha = clamp(alpha, 0.0, 1.0);
 
     gl_FragColor = vec4(color, alpha);
@@ -67,9 +86,10 @@ export const momentsVertexShader = /* glsl */ `
 
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
 
-    // Pulsing size based on relevance
+    // Pulsing size based on relevance + idle twinkle
+    float twinkle = 0.15 * sin(uTime * 1.5 + position.x * 7.0 + position.z * 3.0) * (1.0 - aRelevance);
     float pulse = 1.0 + 0.3 * sin(uTime * 2.0 + position.x * 5.0) * aRelevance;
-    float size = aSize * (0.5 + aRelevance * 2.0) * pulse;
+    float size = aSize * (0.5 + twinkle + aRelevance * 2.5) * pulse;
 
     gl_PointSize = size * (300.0 / -mvPosition.z);
     gl_Position = projectionMatrix * mvPosition;
@@ -86,17 +106,17 @@ export const momentsFragmentShader = /* glsl */ `
     float dist = length(center);
     if (dist > 0.5) discard;
 
-    float softEdge = 1.0 - smoothstep(0.2, 0.5, dist);
+    float softEdge = 1.0 - smoothstep(0.15, 0.5, dist);
 
     // Glow intensity
-    float intensity = 0.1 + vRelevance * 1.5;
+    float intensity = 0.12 + vRelevance * 1.8;
     vec3 color = vColor * intensity * softEdge;
 
-    // Add bloom-friendly bright core for relevant points
-    float coreBright = smoothstep(0.3, 0.0, dist) * vRelevance * 2.0;
-    color += vec3(1.0, 0.95, 0.85) * coreBright;
+    // Bloom-friendly bright core for relevant points
+    float coreBright = smoothstep(0.25, 0.0, dist) * vRelevance * 2.5;
+    color += vec3(1.0, 0.92, 0.78) * coreBright;
 
-    float alpha = softEdge * (0.15 + vRelevance * 0.85);
+    float alpha = softEdge * (0.12 + vRelevance * 0.88);
 
     gl_FragColor = vec4(color, alpha);
   }

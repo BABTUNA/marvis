@@ -21,7 +21,6 @@ const CLUSTER_COLORS: Record<string, [number, number, number]> = {
 };
 
 const tempObject = new THREE.Object3D();
-const tempColor = new THREE.Color();
 
 export function MeetingSpheres() {
   const meshRef = useRef<THREE.InstancedMesh>(null);
@@ -54,17 +53,27 @@ export function MeetingSpheres() {
     };
   }, [count, meetings]);
 
-  // Animate relevance values smoothly
   const targetRelevance = useRef(new Float32Array(count));
+  const uniformsRef = useRef({ uTime: { value: 0 } });
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     if (!meshRef.current || count === 0) return;
+
+    // Update time uniform
+    uniformsRef.current.uTime.value = state.clock.elapsedTime;
+    if (materialRef.current) {
+      materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+    }
 
     // Update target relevance
     for (let i = 0; i < count; i++) {
       const meeting = meetings[i];
       const rel = relevanceMap.get(meeting.id) ?? 0;
-      targetRelevance.current[i] = drilledMeeting ? (drilledMeeting.id === meeting.id ? 1 : 0.05) : rel;
+      targetRelevance.current[i] = drilledMeeting
+        ? drilledMeeting.id === meeting.id
+          ? 1
+          : 0.05
+        : rel;
     }
 
     // Smooth transition
@@ -112,18 +121,6 @@ export function MeetingSpheres() {
     [meetings, drilledMeeting, drillInto]
   );
 
-  const shaderMaterial = useMemo(
-    () => ({
-      vertexShader: sphereVertexShader,
-      fragmentShader: sphereFragmentShader,
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      side: THREE.FrontSide,
-    }),
-    []
-  );
-
   if (count === 0) return null;
 
   return (
@@ -143,7 +140,17 @@ export function MeetingSpheres() {
           args={[colorAttr, 3]}
         />
       </icosahedronGeometry>
-      <shaderMaterial ref={materialRef} attach="material" {...shaderMaterial} />
+      <shaderMaterial
+        ref={materialRef}
+        attach="material"
+        vertexShader={sphereVertexShader}
+        fragmentShader={sphereFragmentShader}
+        transparent
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+        side={THREE.FrontSide}
+        uniforms={uniformsRef.current}
+      />
     </instancedMesh>
   );
 }
