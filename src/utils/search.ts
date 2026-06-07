@@ -28,6 +28,21 @@ function cosine(a: number[], b: number[]): number {
   return denom === 0 ? 0 : dot / denom;
 }
 
+// Cosine similarity with a sparse vector (stored as [index, value] pairs)
+function cosineSparse(dense: number[], sparse: [number, number][]): number {
+  let dot = 0, nb = 0;
+  for (const [idx, val] of sparse) {
+    dot += dense[idx] * val;
+    nb += val * val;
+  }
+  let na = 0;
+  for (let i = 0; i < dense.length; i++) {
+    na += dense[i] * dense[i];
+  }
+  const denom = Math.sqrt(na) * Math.sqrt(nb);
+  return denom === 0 ? 0 : dot / denom;
+}
+
 export class SearchEngine {
   private vocab: Record<string, number>;
   private idf: Record<string, number>;
@@ -72,10 +87,13 @@ export class SearchEngine {
     const results: SearchResult[] = this.meetings.map((meeting) => {
       const score = cosine(qVec, meeting.vector);
       const momentScores = meeting.moments
-        .map((moment) => ({
-          moment,
-          score: cosine(qVec, moment.vector),
-        }))
+        .map((moment) => {
+          // Moment vectors can be sparse ([index, value] pairs) or dense
+          const momentScore = Array.isArray(moment.vector[0])
+            ? cosineSparse(qVec, moment.vector as unknown as [number, number][])
+            : cosine(qVec, moment.vector as number[]);
+          return { moment, score: momentScore };
+        })
         .sort((a, b) => b.score - a.score);
 
       return { meeting, score, momentScores };

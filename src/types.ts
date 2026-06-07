@@ -1,10 +1,9 @@
 export interface Moment {
   id: string;
   text: string;
-  keywords: string[];
   localPos: [number, number, number];
   timestamp: string;
-  vector: number[];
+  vector: number[] | [number, number][];
 }
 
 export interface Meeting {

@@ -275,9 +275,10 @@ for (const cluster of clusters) {
     const theta = rand() * Math.PI * 2;
     const phi = Math.acos(2 * rand() - 1);
     const r = cluster.radius * Math.cbrt(rand()); // uniform in volume
-    const px = cluster.center[0] + r * Math.sin(phi) * Math.cos(theta);
-    const py = cluster.center[1] + r * Math.sin(phi) * Math.sin(theta);
-    const pz = cluster.center[2] + r * Math.cos(phi);
+    const rd = (v) => Math.round(v * 100) / 100;
+    const px = rd(cluster.center[0] + r * Math.sin(phi) * Math.cos(theta));
+    const py = rd(cluster.center[1] + r * Math.sin(phi) * Math.sin(theta));
+    const pz = rd(cluster.center[2] + r * Math.cos(phi));
 
     // Select moments for this meeting
     const numMoments = Math.floor(15 + rand() * 15);
@@ -293,11 +294,10 @@ for (const cluster of clusters) {
       selectedMoments.push({
         id: `${meetingId}-${i}`,
         text: template.text,
-        keywords: template.keywords,
         localPos: [
-          lr * Math.sin(lp) * Math.cos(lt),
-          lr * Math.sin(lp) * Math.sin(lt),
-          lr * Math.cos(lp),
+          rd(lr * Math.sin(lp) * Math.cos(lt)),
+          rd(lr * Math.sin(lp) * Math.sin(lt)),
+          rd(lr * Math.cos(lp)),
         ],
         timestamp: `${Math.floor(rand() * 55 + 1)}:${String(Math.floor(rand() * 60)).padStart(2, '0')}`,
       });
@@ -389,13 +389,19 @@ function computeVector(tokens) {
   return vec.map(v => Math.round((v / norm) * 10000) / 10000);
 }
 
-// Compute vectors for meetings and moments
+// Compute vectors for meetings; moments use sparse format
 for (let i = 0; i < meetings.length; i++) {
   meetings[i].vector = computeVector(allDocs[i]);
 
   for (const moment of meetings[i].moments) {
     const momentTokens = tokenize(moment.text);
-    moment.vector = computeVector(momentTokens);
+    const fullVec = computeVector(momentTokens);
+    // Store sparse: only non-zero entries as [index, value] pairs
+    const sparse = [];
+    for (let j = 0; j < fullVec.length; j++) {
+      if (fullVec[j] !== 0) sparse.push([j, fullVec[j]]);
+    }
+    moment.vector = sparse;
   }
 }
 
