@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { GalaxyScene } from './components/GalaxyScene';
 import { SearchOverlay } from './components/SearchOverlay';
+import { DemoMode } from './components/DemoMode';
 import { useStore } from './store';
 import type { MeetingsData } from './types';
 
@@ -43,6 +44,7 @@ function App() {
     <>
       <GalaxyScene />
       <SearchOverlay />
+      <DemoMode />
     </>
   );
 }

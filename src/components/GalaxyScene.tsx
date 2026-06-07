@@ -4,6 +4,7 @@ import { MeetingSpheres } from './MeetingSpheres';
 import { MomentPoints } from './MomentPoints';
 import { CameraController } from './CameraController';
 import { SynthesisEdges } from './SynthesisEdges';
+import { MeetingLabels } from './MeetingLabels';
 import { PostProcessing } from './PostProcessing';
 import { GalaxyEnvironment } from './GalaxyEnvironment';
 
@@ -26,6 +27,7 @@ export function GalaxyScene() {
         <MeetingSpheres />
         <MomentPoints />
         <SynthesisEdges />
+        <MeetingLabels />
         <CameraController />
         <PostProcessing />
       </Suspense>
