@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useStore } from '../store';
 import { useVoiceInput } from '../hooks/useVoiceInput';
+import { getClaudeAnswer } from '../utils/claude';
 
 // Answer generation for free-form queries
 const ANSWER_PATTERNS: { pattern: RegExp; answer: string }[] = [
@@ -111,8 +112,12 @@ export function SearchOverlay() {
 
       if (val.trim().length > 3) {
         setAnswerLoading(true);
-        answerTimeoutRef.current = window.setTimeout(() => {
-          const ans = generateAnswer(val);
+        answerTimeoutRef.current = window.setTimeout(async () => {
+          const currentResults = useStore.getState().results;
+
+          // Try Claude first, fall back to pattern-matched answers
+          const claudeAnswer = await getClaudeAnswer(val, currentResults);
+          const ans = claudeAnswer || generateAnswer(val);
           if (ans) {
             setAnswer(ans);
           }
@@ -120,7 +125,6 @@ export function SearchOverlay() {
 
           // Check if this should trigger synthesis (void moment)
           if (/lose|risk|going to|connected|across.*meeting/i.test(val)) {
-            const currentResults = useStore.getState().results;
             if (currentResults.length >= 3) {
               const top3 = currentResults.slice(0, 3);
               const edges: [string, string][] = [];
@@ -138,7 +142,7 @@ export function SearchOverlay() {
               setTimeout(() => setSynthesis(edges, centroid), 800);
             }
           }
-        }, 1200);
+        }, 800);
       } else {
         setAnswer('');
         setAnswerLoading(false);
