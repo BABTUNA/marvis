@@ -6,6 +6,8 @@ import { CameraController } from './CameraController';
 import { SynthesisEdges } from './SynthesisEdges';
 import { MeetingLabels } from './MeetingLabels';
 import { ClusterLabels } from './ClusterLabels';
+import { NebulaParticles } from './NebulaParticles';
+import { WarpStreaks } from './WarpStreaks';
 import { PostProcessing } from './PostProcessing';
 import { GalaxyEnvironment } from './GalaxyEnvironment';
 
@@ -25,12 +27,14 @@ export function GalaxyScene() {
     >
       <Suspense fallback={null}>
         <GalaxyEnvironment />
+        <NebulaParticles />
         <MeetingSpheres />
         <MomentPoints />
         <SynthesisEdges />
         <MeetingLabels />
         <ClusterLabels />
         <CameraController />
+        <WarpStreaks />
         <PostProcessing />
       </Suspense>
     </Canvas>
