@@ -97,6 +97,7 @@ export function SearchOverlay() {
   const setAnswerLoading = useStore((s) => s.setAnswerLoading);
   const isFlying = useStore((s) => s.isFlying);
   const setSynthesis = useStore((s) => s.setSynthesis);
+  const data = useStore((s) => s.data);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [localQuery, setLocalQuery] = useState('');
@@ -572,11 +573,11 @@ export function SearchOverlay() {
         </div>
       )}
 
-      {/* Brand */}
+      {/* Brand + Stats */}
       <div
         style={{
           position: 'absolute',
-          bottom: 24,
+          bottom: 20,
           left: '50%',
           transform: 'translateX(-50%)',
           textAlign: 'center',
@@ -584,14 +585,27 @@ export function SearchOverlay() {
       >
         <div
           style={{
-            color: 'rgba(255, 215, 153, 0.25)',
-            fontSize: 11,
+            color: 'rgba(255, 215, 153, 0.3)',
+            fontSize: 13,
             letterSpacing: '0.3em',
             textTransform: 'uppercase',
+            fontWeight: 300,
           }}
         >
           orrery
         </div>
+        {data && (
+          <div
+            style={{
+              color: 'rgba(255, 215, 153, 0.12)',
+              fontSize: 9,
+              letterSpacing: '0.1em',
+              marginTop: 4,
+            }}
+          >
+            {data.meta.numMeetings} meetings \u00b7 {data.meta.numMoments} moments \u00b7 in-browser search
+          </div>
+        )}
       </div>
     </div>
   );
