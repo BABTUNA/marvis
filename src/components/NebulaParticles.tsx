@@ -11,14 +11,14 @@ export function NebulaParticles() {
     const col = new Float32Array(count * 3);
     const sz = new Float32Array(count);
 
-    // Create wispy nebula clouds around the cluster regions
+    // Create wispy nebula clouds around the spherical cluster regions
     const centers = [
-      { pos: [8, 1, -2], color: [0.15, 0.25, 0.45], spread: 6 },
-      { pos: [-6, 3, 4], color: [0.1, 0.35, 0.25], spread: 5 },
-      { pos: [-2, -5, -3], color: [0.35, 0.15, 0.12], spread: 5 },
-      { pos: [0, 0, 0], color: [0.2, 0.18, 0.25], spread: 10 },
-      { pos: [-7, -1, 1], color: [0.2, 0.3, 0.35], spread: 4 },
-      { pos: [3, 5, -6], color: [0.4, 0.2, 0.1], spread: 4 },
+      { pos: [4.4, 9, 0], color: [0.08, 0.15, 0.3], spread: 5 },
+      { pos: [0.8, 5, -8.6], color: [0.05, 0.2, 0.15], spread: 5 },
+      { pos: [-9.8, 1, -1.8], color: [0.2, 0.08, 0.06], spread: 4 },
+      { pos: [0, 0, 0], color: [0.1, 0.09, 0.14], spread: 12 },
+      { pos: [8.4, -1, -5.3], color: [0.1, 0.18, 0.2], spread: 4 },
+      { pos: [-2.4, -5, -8.3], color: [0.25, 0.1, 0.05], spread: 4 },
     ];
 
     for (let i = 0; i < count; i++) {
@@ -66,7 +66,7 @@ export function NebulaParticles() {
         vertexColors
         size={0.8}
         transparent
-        opacity={0.06}
+        opacity={0.03}
         sizeAttenuation
         depthWrite={false}
         blending={THREE.AdditiveBlending}

@@ -33,10 +33,10 @@ export function GalaxyEnvironment() {
   return (
     <>
       {/* Near-black background */}
-      <color attach="background" args={['#050508']} />
+      <color attach="background" args={['#030305']} />
 
       {/* Exponential fog for depth */}
-      <fogExp2 attach="fog" args={['#050508', 0.015]} />
+      <fogExp2 attach="fog" args={['#030305', 0.018]} />
 
       {/* Background stars */}
       <points ref={starsRef}>
@@ -55,10 +55,10 @@ export function GalaxyEnvironment() {
           />
         </bufferGeometry>
         <pointsMaterial
-          color="#3a3a5c"
-          size={0.15}
+          color="#25253d"
+          size={0.12}
           transparent
-          opacity={0.4}
+          opacity={0.2}
           sizeAttenuation
           depthWrite={false}
           blending={THREE.AdditiveBlending}

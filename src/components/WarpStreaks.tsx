@@ -26,7 +26,7 @@ const streakFragmentShader = /* glsl */ `
     if (dist > 0.5) discard;
 
     float alpha = (1.0 - dist * 2.0) * vOpacity;
-    gl_FragColor = vec4(0.9, 0.85, 0.7, alpha * 0.5);
+    gl_FragColor = vec4(0.7, 0.65, 0.5, alpha * 0.35);
   }
 `;
 

@@ -3,8 +3,8 @@ import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useStore } from '../store';
 
-const ORBIT_SPEED = 0.03;
-const ORBIT_RADIUS = 0.5;
+const ORBIT_SPEED = 0.015;
+const ORBIT_RADIUS = 0.4;
 
 export function CameraController() {
   const { camera } = useThree();
@@ -60,7 +60,7 @@ export function CameraController() {
     controlPoint.current.copy(mid).add(lateral);
 
     progress.current = 0;
-    flightDuration.current = Math.min(3.0, Math.max(1.2, dist * 0.12));
+    flightDuration.current = Math.min(4.5, Math.max(2.0, dist * 0.18));
     introComplete.current = true;
     setFlying(true);
   }, [cameraTarget, camera, setFlying]);
@@ -99,12 +99,12 @@ export function CameraController() {
         progress.current + delta / flightDuration.current
       );
 
-      // Quintic ease in/out
+      // Cubic ease in/out (smoother than quintic)
       const t = progress.current;
       const ease =
         t < 0.5
-          ? 16 * t * t * t * t * t
-          : 1 - Math.pow(-2 * t + 2, 5) / 2;
+          ? 4 * t * t * t
+          : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
       // Quadratic bezier
       const omt = 1 - ease;
@@ -130,8 +130,8 @@ export function CameraController() {
       );
       cam.lookAt(currentLookAt.current);
 
-      // FOV punch during flight
-      const fovPunch = Math.sin(ease * Math.PI) * 8;
+      // FOV punch during flight (subtle)
+      const fovPunch = Math.sin(ease * Math.PI) * 3;
       const baseFov =
         startFov.current + (targetFov.current - startFov.current) * ease;
       cam.fov = baseFov + fovPunch;
@@ -147,11 +147,11 @@ export function CameraController() {
       const orbitY = Math.cos(time * ORBIT_SPEED * 0.7) * ORBIT_RADIUS * 0.3;
 
       cam.position.x +=
-        (targetPos.current.x + orbitX - cam.position.x) * delta * 0.5;
+        (targetPos.current.x + orbitX - cam.position.x) * delta * 0.15;
       cam.position.y +=
-        (targetPos.current.y + orbitY - cam.position.y) * delta * 0.5;
+        (targetPos.current.y + orbitY - cam.position.y) * delta * 0.15;
       cam.position.z +=
-        (targetPos.current.z - cam.position.z) * delta * 0.5;
+        (targetPos.current.z - cam.position.z) * delta * 0.15;
 
       cam.lookAt(currentLookAt.current);
 

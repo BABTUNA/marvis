@@ -10,15 +10,15 @@ export function PostProcessing() {
   return (
     <EffectComposer multisampling={0}>
       <Bloom
-        intensity={1.5}
-        luminanceThreshold={0.1}
+        intensity={0.7}
+        luminanceThreshold={0.25}
         luminanceSmoothing={0.9}
         kernelSize={KernelSize.LARGE}
         mipmapBlur
       />
       <Vignette
         offset={0.3}
-        darkness={0.7}
+        darkness={0.85}
         blendFunction={BlendFunction.NORMAL}
       />
       <Noise

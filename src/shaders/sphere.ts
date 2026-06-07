@@ -45,25 +45,25 @@ export const sphereFragmentShader = /* glsl */ `
     float core = pow(max(dot(vNormal, vViewDir), 0.0), 2.0);
 
     // Idle breathing brightness
-    float breathBright = 0.03 * sin(uTime * 1.2 + vColor.x * 10.0) * (1.0 - vRelevance);
+    float breathBright = 0.02 * sin(uTime * 1.2 + vColor.x * 10.0) * (1.0 - vRelevance);
 
     // Base dim emission with breath
-    float baseIntensity = 0.18 + 0.12 * core + breathBright;
+    float baseIntensity = 0.06 + 0.05 * core + breathBright;
 
     // Relevance boost with warm shift
-    float relevanceGlow = vRelevance * (1.8 + 1.2 * fresnel);
+    float relevanceGlow = vRelevance * (1.2 + 0.8 * fresnel);
 
     vec3 color = vColor * (baseIntensity + relevanceGlow);
 
     // White-gold rim for high relevance
     vec3 rimColor = vec3(1.0, 0.92, 0.78);
-    color += rimColor * fresnel * vRelevance * 1.0;
+    color += rimColor * fresnel * vRelevance * 0.6;
 
     // Subtle warm tint on rim even at idle
-    color += rimColor * fresnel * 0.05 * (1.0 - vRelevance);
+    color += rimColor * fresnel * 0.02 * (1.0 - vRelevance);
 
     // Atmospheric edge
-    float alpha = 0.35 + 0.65 * (core + fresnel * 0.5) + vRelevance * 0.5;
+    float alpha = 0.2 + 0.5 * (core + fresnel * 0.3) + vRelevance * 0.5;
     alpha = clamp(alpha, 0.0, 1.0);
 
     gl_FragColor = vec4(color, alpha);
@@ -109,14 +109,14 @@ export const momentsFragmentShader = /* glsl */ `
     float softEdge = 1.0 - smoothstep(0.15, 0.5, dist);
 
     // Glow intensity
-    float intensity = 0.12 + vRelevance * 1.8;
+    float intensity = 0.05 + vRelevance * 1.2;
     vec3 color = vColor * intensity * softEdge;
 
     // Bloom-friendly bright core for relevant points
-    float coreBright = smoothstep(0.25, 0.0, dist) * vRelevance * 2.5;
+    float coreBright = smoothstep(0.25, 0.0, dist) * vRelevance * 1.5;
     color += vec3(1.0, 0.92, 0.78) * coreBright;
 
-    float alpha = softEdge * (0.12 + vRelevance * 0.88);
+    float alpha = softEdge * (0.06 + vRelevance * 0.88);
 
     gl_FragColor = vec4(color, alpha);
   }

@@ -3,16 +3,16 @@ import { Html } from '@react-three/drei';
 import { useStore } from '../store';
 
 const CLUSTER_CENTERS: Record<string, { pos: [number, number, number]; label: string }> = {
-  'acme-renewal': { pos: [8, 2, -3], label: 'Acme Renewal' },
-  'acme-support': { pos: [10, 0, -1], label: 'Acme Support' },
-  'globex-deal': { pos: [-6, 4, 5], label: 'Globex Deal' },
-  'internal-product': { pos: [-2, -6, -4], label: 'Product' },
-  'internal-hiring': { pos: [0, 7, 8], label: 'Hiring' },
-  'vertexai-expansion': { pos: [-8, -2, 0], label: 'VertexAI' },
-  'competitor-intel': { pos: [4, -5, 6], label: 'Competitive' },
-  'zenith-churn': { pos: [3, 6, -7], label: 'Zenith Risk' },
-  'partnerships': { pos: [-5, 5, -6], label: 'Partnerships' },
-  'board-investors': { pos: [0, -8, -2], label: 'Board' },
+  'acme-renewal': { pos: [4.4, 9, 0], label: 'Acme Renewal' },
+  'acme-support': { pos: [-5.3, 7, 4.8], label: 'Acme Support' },
+  'globex-deal': { pos: [0.8, 5, -8.6], label: 'Globex Deal' },
+  'internal-product': { pos: [7.2, 3, 6.3], label: 'Product' },
+  'internal-hiring': { pos: [-9.8, 1, -1.8], label: 'Hiring' },
+  'vertexai-expansion': { pos: [8.4, -1, -5.3], label: 'VertexAI' },
+  'competitor-intel': { pos: [-3.3, -3, 9], label: 'Competitive' },
+  'zenith-churn': { pos: [-2.4, -5, -8.3], label: 'Zenith Risk' },
+  'partnerships': { pos: [6.3, -7, 3.3], label: 'Partnerships' },
+  'board-investors': { pos: [-2.9, -9, -3.3], label: 'Board' },
 };
 
 export function ClusterLabels() {
